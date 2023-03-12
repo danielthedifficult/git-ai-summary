@@ -1,6 +1,6 @@
 {
   "name": "git-ai-summary",
-  "version": "0.0.0-development",
+  "version": "1.0.1",
   "description": "A tool for using AI to summarize your recent git history for in various languages and for various audiences.",
   "main": "./src/index.js",
   "bin": "./src/cli.js",
@@ -30,10 +30,13 @@
     "node": ">=12.0"
   },
   "keywords": [
-    "boilerplate",
-    "template",
-    "typescript",
-    "vscode",
+    "openai",
+    "chatgpt",
+    "javascript",
+    "summarizing",
+    "translating",
+    "utils",
+    "collaborating",
     "jest",
     "husky",
     "commitizen",
@@ -113,9 +116,13 @@
     ]
   },
   "dependencies": {
+    "@ryansonshine/cz-conventional-changelog": "^3.3.4",
+    "commitizen": "^4.3.0",
+    "cz": "^1.8.2",
+    "g": "^2.0.1",
     "openai": "^3.2.1"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   }
 }
