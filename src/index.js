@@ -38,12 +38,25 @@ getGptSummary(mergedArgs);
 
 async function getGptSummary(args) {
   const prompt = generatePrompt(args);
-  const commit_log = getGitSummary(args.range);
-  const summary = await getChatGptResponse(
-    `${prompt} ${commit_log}`,
-    args.OPENAI_API_KEY
-  );
-  if (!args.quiet) console.log(summary);
+  const commit_log = await getGitSummary(args.range);
+  if (!args.quiet)
+    console.log(
+      '===== Using prompt:\n\n"',
+      prompt,
+      '"\n\n===== and commit_log:\n\n"',
+      commit_log,
+      '"'
+    );
+  const {
+    summary,
+    usage: { prompt_tokens, completion_tokens },
+  } = await getChatGptResponse(`${prompt} ${commit_log}`, args.key);
+  if (!args.quiet)
+    console.log(
+      '===== Summary complete:\n',
+      summary,
+      `\n\n===== Used ${prompt_tokens} prompt tokens and ${completion_tokens} completion tokens`
+    );
   return summary;
 }
 
@@ -69,11 +82,15 @@ async function getChatGptResponse(prompt, apiKey) {
   const openai = new OpenAIApi(configuration);
   const request = await openai.createCompletion({
     prompt,
-    ...openAiConfig,
+    ...openAiConfig(args.model_params),
   });
-  const { status, statusText, data } = request;
-  const answer = data.choices[0].text;
-  return { status, statusText, answer };
+  const {
+    status,
+    statusText,
+    data: { choices, usage },
+  } = request;
+  const summary = choices[0].text;
+  return { status, statusText, summary, usage };
 }
 
 function generatePrompt(
@@ -83,7 +100,7 @@ function generatePrompt(
 ) {
   return `You are a technology marketing and communications specialist representing our software project.
           I am going to give you a git commit log showing recent work, and I want you to do the following:
-          1. Summarize these commit logs into friendly software release notes that will be appropriate for ${audience}.
+          1. Summarize these commit logs (and only the information contained within these commit logs) into friendly software release notes that will be appropriate for ${audience}.
           2. Include as much detail as possible, including the possible advantages of these changes, without being too technical.
           3. Promote new features, and report any fixed bugs in a fun and friendly tone.
     
@@ -95,12 +112,12 @@ function generatePrompt(
 
           Here is the commit log:`;
 }
-function openAiConfig(overrides) {
+function openAiConfig(model_params) {
   return {
-    model: 'gpt-3.5-turbo', // best available
-    temperature: 0, // Mostly deterministic
+    model: 'text-davinci-003', // best available
+    temperature: 0, // 0 = Mostly deterministic
     max_tokens: 2900, // sensible default, because the max request is 4096 tokens, and the prompts consume a fair amount
-    ...overrides,
+    ...model_params,
   };
 }
 
