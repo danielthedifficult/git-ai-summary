@@ -14,6 +14,8 @@ This takes a git repository's commit history and uses the OpenAI ChatGPT API to 
 
 It provides a convenient way to generate summaries and translations of a project's commit history, which can be helpful for freelancers or developers who need to communicate their work to non-technical clients or colleagues who speak a different language.
 
+Note: I use, and this tool is designed for, conventional/semantic style commit messages. If you have a different format, use the `commit_format` arg to describe it.
+
 ** THIS PACKAGE SENDS YOUR COMMIT MESSAGES (but not the code or diffs) TO ChatGPT. YOU HAVE BEEN WARNED. THE AUTHOR ASSUMES NO RESPONSIBILITY FOR THE SECURITY OR PRIVACY OF YOUR SUBMISSIONS **
 
 ## Todo
@@ -66,6 +68,7 @@ const args = {
    language: 'spanish',
    provider: 'openai',
    key: 'YOUR-OPENAI-KEY',
+   commit_format: 'Interpret the commit messages as follows: "type/scope/purpose"', // e.g. if your commit format is "fix/login/Correctly handle invalid auth with error messages"
    additional_instructions: 'Write the summaries in Haiku', // any additional instructions you want to send to ChatGPT
    quiet: true, // won't log to console
    model_params: { // https://platform.openai.com/docs/introduction/overview
@@ -96,21 +99,19 @@ Suppose you are a developer working on a project with non-technical colleagues w
 
 I use conventional commits, but I asked ChatGPT for the best way to structure commit messages for later summarization:
 
-```
-To best understand and summarize commit messages for software release notes, it's helpful if the commit messages follow a consistent structure. Here are some best practices for structuring commit messages that will make it easier for me as a marketing and communications specialist to parse and understand them:
-
-Use a one-line summary: Start the commit message with a short, one-line summary that briefly describes the change or fix. This summary should be clear and concise, and no longer than 50 characters.
-
-Use a descriptive title: Use a descriptive title that clearly describes the nature of the change or fix.
-
-Provide details in the body: Use the body of the commit message to provide more details about the change or fix. This can include any relevant information such as the rationale behind the change or fix, the potential benefits or impacts of the change, and any relevant technical details that are important to understanding the change.
-
-Use bullet points: Use bullet points to clearly outline the specific changes that were made. This makes it easier to understand the nature of the change or fix and the specific impacts it may have.
-
-Use consistent formatting: Use consistent formatting for your commit messages. This makes it easier to parse and understand them quickly and accurately.
-
-By following these best practices, you can help me quickly understand the nature of the changes in the commit log and create friendly software release notes that will be appropriate for the intended audience.
-```
+><i>To best understand and summarize commit messages for software release notes, it's helpful if the commit messages follow a consistent structure. Here are some best practices for structuring commit messages that will make it easier for me as a marketing and communications specialist to parse and understand them:
+> 
+>Use a one-line summary: Start the commit message with a short, one-line summary that briefly describes the change or fix. This summary should be clear and concise, and no longer than 50 characters.
+> 
+>Use a descriptive title: Use a descriptive title that clearly describes the nature of the change or fix.
+> 
+>Provide details in the body: Use the body of the commit message to provide more details about the change or fix. This can include any relevant information such as the rationale behind the change or fix, the potential benefits or impacts of the change, and any relevant technical details that are important to understanding the change.
+> 
+>Use bullet points: Use bullet points to clearly outline the specific changes that were made. This makes it easier to understand the nature of the change or fix and the specific impacts it may have.
+> 
+>Use consistent formatting: Use consistent formatting for your commit messages. This makes it easier to parse and understand them quickly and accurately.
+> 
+>By following these best practices, you can help me quickly understand the nature of the changes in the commit log and create friendly software release notes that will be appropriate for the intended audience.</i></quote>
 
 ## Limitations
 
