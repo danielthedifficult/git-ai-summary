@@ -18,7 +18,8 @@ It provides a convenient way to generate summaries and translations of a project
 
 ## Todo
 
-- [ ] Create GitHub action to do this on a recurring schedule
+- [ ] Create GitHub action that would do this on a recurring schedule or on certain events
+- [ ] Add types, convert to TS ?
 - [ ] Add other models / parameters (like gpt-3.5-turbo)
 - [ ] Better output (chalk-style coloring, etc.)
 - [ ] Add token usage (and expected costs) information
@@ -50,16 +51,14 @@ Then, you can use in a package.json script:
 
 ```js
 scripts: {
-   "es-client-2-week-summary" : "range='14 days ago' audience=clients language=spanish git-ai-summary"
+   "es-client-2-week-summary" : "range='14 days ago' audience=clients language=spanish npx git-ai-summary"
 }
 ```
 
 Or in your app!
 
 ```js
-import { getGptSummary } from "git-ai-summary"
-
-
+import { getGptSummary } from "git-ai-summary
 // all args optional
 const args = {
    range: '14 days ago', // anything compatible with git log --since 
@@ -68,7 +67,7 @@ const args = {
    provider: 'openai',
    key: 'YOUR-OPENAI-KEY',
    additional_instructions: 'Write the summaries in Haiku', // any additional instructions you want to send to ChatGPT
-   quiet: true // won't log to console
+   quiet: true, // won't log to console
    model_params: { // https://platform.openai.com/docs/introduction/overview
       model: 'text-davinci-003', // Set your own model!
       temperature: 1, // Get some crazy results!
