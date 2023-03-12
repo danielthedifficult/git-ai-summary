@@ -16,21 +16,29 @@ It provides a convenient way to generate summaries and translations of a project
 
 ** THIS PACKAGE SENDS YOUR COMMIT MESSAGES (but not the code or diffs) TO ChatGPT. YOU HAVE BEEN WARNED. THE AUTHOR ASSUMES NO RESPONSIBILITY FOR THE SECURITY OR PRIVACY OF YOUR SUBMISSIONS **
 
+## Todo
+
+- [ ] Create GitHub action to do this on a recurring schedule
+- [ ] Add other models / parameters (like gpt-3.5-turbo)
+- [ ] Better output (chalk-style coloring, etc.)
+- [ ] Add token usage (and expected costs) information
+- [ ] Add more options for fun and useful prompt crafting
+
 ## Try it out!
 
 Run the following from within your repo's folder to print a summary of the last 7 days of commit history to stdout:
 
 ```bash 
-OPENAI_API_KEY="your-api-key" npx git-magical-summaries
+OPENAI_API_KEY="your-api-key" npx git-ai-summary
 ```
 
 ## Installation
 
 To use this package in a script or your app, first install it via npm:
 
-```npm install -d git-gpt-summary`
+```npm install -d git-ai-summary`
 
-`yarn add git-gpt-summary --save-dev`
+`yarn add git-ai-summary --save-dev`
 
 ## Usage
 
@@ -42,14 +50,14 @@ Then, you can use in a package.json script:
 
 ```js
 scripts: {
-   "es-client-2-week-summary" : "range='14 days ago' audience=clients language=spanish git-gpt-summary"
+   "es-client-2-week-summary" : "range='14 days ago' audience=clients language=spanish git-ai-summary"
 }
 ```
 
 Or in your app!
 
 ```js
-import { getGptSummary } from "git-gpt-summmary"
+import { getGptSummary } from "git-ai-summary"
 
 
 // all args optional
@@ -57,10 +65,11 @@ const args = {
    range: '14 days ago', // anything compatible with git log --since 
    audience: 'clients', // finishes the sentence: 'Summarize these commit logs into friendly software release notes that will be appropriate for...'
    language: 'spanish',
+   provider: 'openai',
    key: 'YOUR-OPENAI-KEY',
-   additional_instructions: "Write the summaries in Haiku", // any additional instructions you want to send to ChatGPT
+   additional_instructions: 'Write the summaries in Haiku', // any additional instructions you want to send to ChatGPT
    quiet: true // won't log to console
-   gpt_overrides: { // https://platform.openai.com/docs/introduction/overview
+   model_params: { // https://platform.openai.com/docs/introduction/overview
       model: 'text-davinci-003', // Set your own model!
       temperature: 1, // Get some crazy results!
       max_tokens: 500, // Be cheap!
@@ -75,14 +84,14 @@ const summary = await getGptSummary(args)
 
 Suppose you are a freelancer working on a web development project for a non-technical client.
 
-`OPENAI_API_KEY="your-api-key" RANGE="1 week ago" npx git-magical-summaries --audience 'clients'`
+`OPENAI_API_KEY="your-api-key" RANGE="1 week ago" npx git-ai-summary --audience 'clients'`
 
 
 ### Example 2: Developer Summarizing Work for Non-Technical Colleagues in Another Language
 
 Suppose you are a developer working on a project with non-technical colleagues who speak a different language.
 
-`OPENAI_API_KEY="your-api-key" RANGE="1 week ago" npx git-magical-summaries --language french --audience 'non-technical colleagues'`
+`OPENAI_API_KEY="your-api-key" RANGE="1 week ago" npx git-ai-summary --language french --audience 'non-technical colleagues'`
 
 ## Tips
 
