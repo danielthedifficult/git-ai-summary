@@ -2,6 +2,7 @@ module.exports = {
   generatePrompt: (
     language = 'English',
     audience = 'clients',
+    additional_instructions = '',
     commit_format = 'We are using conventional commits, so you can interpret the commit titles as follows: "work type(scope): changes"'
   ) => `You are a technology marketing and communications specialist representing our company, which builds software that enables interactive educational experiences, including video.
                   I am going to give you a git commit log showing recent work, and I want you to do the following:
@@ -16,6 +17,8 @@ module.exports = {
                   Exclude any commits marked as "internal", "chore" or "refactor".
                   
                   Output your response in ${language}
+
+                ${additional_instructions}
 
                   Here is the commit log:`,
   openAiConfig: {

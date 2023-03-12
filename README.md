@@ -10,7 +10,7 @@ _That's why we've created the Git Commit History Summarizer & Translator - the t
 
 Get Friendly User-safe Commit toKen Explanations Done
 
-This Node.js package is designed to take a git repository's commit history and use the OpenAI ChatGPT API to summarize and/or translate it. 
+This takes a git repository's commit history and uses the OpenAI ChatGPT API to summarize and/or translate it. 
 
 It provides a convenient way to generate summaries and translations of a project's commit history, which can be helpful for freelancers or developers who need to communicate their work to non-technical clients or colleagues who speak a different language.
 
@@ -51,11 +51,14 @@ Or in your app!
 ```js
 import { getGptSummary } from "git-gpt-summmary"
 
+
+// all args optional
 const args = {
    range: '14 days ago', // anything compatible with git log --since 
    audience: 'clients', // finishes the sentence: 'Summarize these commit logs into friendly software release notes that will be appropriate for...'
    language: 'spanish',
    key: 'YOUR-OPENAI-KEY',
+   additional_instructions: "Write the summaries in Haiku", // any additional instructions you want to send to ChatGPT
    quiet: true // won't log to console
    gpt_overrides: { // https://platform.openai.com/docs/introduction/overview
       model: 'text-davinci-003', // Set your own model!
@@ -70,21 +73,16 @@ const summary = await getGptSummary(args)
 
 ### Example 1: Freelancer Summarizing Work for a Non-Technical Client
 
-Suppose you are a freelancer working on a web development project for a non-technical client. At the end of each week, you want to send the client a summary of the work you've done. You can use this package to generate a summary of the commit history for the past week:
+Suppose you are a freelancer working on a web development project for a non-technical client.
 
 `OPENAI_API_KEY="your-api-key" RANGE="1 week ago" npx git-magical-summaries --audience 'clients'`
 
 
-This will generate a summary of the past week's work, using natural language to describe the changes you've made to the code. You can then send this summary to your client, who will be able to understand what you've been working on without needing to understand the technical details.
-
 ### Example 2: Developer Summarizing Work for Non-Technical Colleagues in Another Language
 
-Suppose you are a developer working on a project with non-technical colleagues who speak a different language. At the end of each week, you want to send them a summary of the work you've done. You can use this package to generate a summary of the commit history for the past week, and then translate it into their language:
+Suppose you are a developer working on a project with non-technical colleagues who speak a different language.
 
-`OPENAI_API_KEY="your-api-key" RANGE="1 week ago" npx git-magical-summaries --language spanish --audience 'technical colleagues'`
-
-This will generate a summary of the past week's work, and then translate it into Spanish. You can then send this summary to your colleagues, who will be able to understand what you've been working on even if they don't speak English.
-
+`OPENAI_API_KEY="your-api-key" RANGE="1 week ago" npx git-magical-summaries --language french --audience 'non-technical colleagues'`
 
 ## Tips
 
