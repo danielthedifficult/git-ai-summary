@@ -1,63 +1,38 @@
-const fs = require('fs');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const { Configuration, OpenAIApi } = require('openai');
-// const fs = require("fs/promises")
+async function getGptSummary(userArgs) {
+  const defaultArgs = {
+    range: process.env.range || '7 days ago',
+    audience: process.env.audience || 'clients',
+    key: process.env.OPENAI_API_KEY,
+    language: process.env.language || 'English',
+    quiet: false,
+  };
+  const args = { ...defaultArgs, ...userArgs };
 
-const data = fs.readFileSync('.env', 'utf8');
-const envVars = data.split('\n');
-envVars.forEach(envVar => {
-  if (envVar.includes('=')) {
-    const [key, value] = envVar.split('=');
-    process.env[key] = value;
-  }
-});
+  args.prompt = generatePrompt(args);
 
-// Parse command line arguments
-const args = {};
-process.argv.slice(2).forEach(arg => {
-  const [key, value] = arg.split('=');
-  if (key.startsWith('--')) {
-    args[key.slice(2)] = value;
-  }
-});
-
-// Define default values
-const defaultArgs = {
-  range: process.env.range || '7 days ago',
-  audience: process.env.audience || 'clients',
-  key: process.env.OPENAI_API_KEY,
-  language: process.env.language || 'English',
-  quiet: false,
-};
-
-// Merge command line arguments with defaults
-const mergedArgs = { ...defaultArgs, ...args };
-
-getGptSummary(mergedArgs);
-
-async function getGptSummary(args) {
-  const prompt = generatePrompt(args);
   const commit_log = await getGitSummary(args.range);
   if (!args.quiet)
     console.log(
       '===== Using prompt:\n\n"',
-      prompt,
+      args.prompt,
       '"\n\n===== and commit_log:\n\n"',
       commit_log,
       '"'
     );
-  const {
-    summary,
-    usage: { prompt_tokens, completion_tokens },
-  } = await getChatGptResponse(`${prompt} ${commit_log}`, args.key);
+  const { summary, usage } = await getChatGptResponse(
+    { prompt: `${args.prompt} ${commit_log}`, model_params: args.model_params },
+    args.key
+  );
   if (!args.quiet)
     console.log(
       '===== Summary complete:\n',
       summary,
-      `\n\n===== Used ${prompt_tokens} prompt tokens and ${completion_tokens} completion tokens`
+      `\n\n===== Used ${usage.prompt_tokens} prompt tokens and ${usage.completion_tokens} completion tokens`
     );
-  return summary;
+  return { summary, commit_log, usage };
 }
 
 async function getGitSummary(RANGE = '7 days ago') {
@@ -71,46 +46,50 @@ async function getGitSummary(RANGE = '7 days ago') {
   }
 
   if (stderr) console.error(`stderr:\n${stderr}`);
-  else console.log(`Git log:\n${stdout}`);
   return stdout;
 }
 
-async function getChatGptResponse(prompt, apiKey) {
+async function getChatGptResponse({ prompt, model_params }, apiKey) {
   const configuration = new Configuration({
     apiKey,
   });
   const openai = new OpenAIApi(configuration);
-  const request = await openai.createCompletion({
+  const response = await openai.createCompletion({
     prompt,
-    ...openAiConfig(args.model_params),
+    ...openAiConfig(model_params),
   });
+
   const {
     status,
     statusText,
     data: { choices, usage },
-  } = request;
+  } = response;
   const summary = choices[0].text;
   return { status, statusText, summary, usage };
 }
 
-function generatePrompt(
+function generatePrompt({
   language = 'English',
   audience = 'clients',
-  commit_format = 'Commit messages use conventional commits, so you can interpret the commit titles as follows: "type(scope): changes"'
-) {
+  additional_instructions = '',
+  commit_format = 'Commit messages use conventional commits, so you can interpret the commit titles as follows: "type(scope): changes"',
+}) {
   return `You are a technology marketing and communications specialist representing our software project.
-          I am going to give you a git commit log showing recent work, and I want you to do the following:
-          1. Summarize these commit logs (and only the information contained within these commit logs) into friendly software release notes that will be appropriate for ${audience}.
-          2. Include as much detail as possible, including the possible advantages of these changes, without being too technical.
-          3. Promote new features, and report any fixed bugs in a fun and friendly tone.
-    
-          ${commit_format}
-          
-          Separate the changes, either in list format, or using newlines.
-          Exclude any commits marked as "internal", "chore" or "refactor".
-          Output your response in ${language}
+           I am going to give you a git commit log showing recent work, and I want you to do the following:
+           1. Summarize these commit logs (and only the information contained within these commit logs) into friendly software release notes that will be appropriate for ${audience}.
+           2. Include as much detail as possible, including the possible advantages of these changes, without being too technical.
+           3. Promote new features, and report any fixed bugs in a fun and friendly tone.
+     
+           ${commit_format}
+           
+           Format your summary using bullet points format and/or newlines.
 
-          Here is the commit log:`;
+           Exclude any commits marked as "internal", "chore" or "refactor".
+           Output your response in ${language}
+ 
+           ${additional_instructions}
+
+           Here is the commit log:`;
 }
 function openAiConfig(model_params) {
   return {
