@@ -67,9 +67,12 @@ scripts: {
 Or in your app!
 
 ```js
-import { getGptSummary } from "git-ai-summary
-// all args optional
+import { getGptSummary } from "git-ai-summary"
+// all args optional, and can be specified from the command line as well with --arg=value
+// model_params need to be prefixed with a triple "-", e.g. "git-ai-summary ---model="model_name" ---temperature=2
 const args = {
+   app_name: "My great app", // Defaults to "name" from package.json
+   app_description: "My freat app does great things", // Defaults to "description" from package.json.
    range: '14 days ago', // anything compatible with git log --since 
    audience: 'clients', // finishes the sentence: 'Summarize these commit logs into friendly software release notes that will be appropriate for...'
    language: 'spanish',
@@ -80,7 +83,7 @@ const args = {
    quiet: true, // won't log to console
    model_params: { // https://platform.openai.com/docs/introduction/overview
       model: 'text-davinci-003', // Set your own model!
-      temperature: 1, // Get some crazy results!
+      temperature: 2, // Get some crazy results! Seriously, 0 is the default and mostly deterministic, YMMV with anything north of 0.8
       max_tokens: 500, // Be cheap!
    }
 }
