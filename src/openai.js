@@ -27,7 +27,7 @@ const getChatGptResponse = {
         usage,
       };
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   },
   'gpt-3.5-turbo': async ({ prompt, model_params, apiKey }) => {

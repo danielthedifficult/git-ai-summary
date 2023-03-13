@@ -22,9 +22,10 @@ Note: I use, and this tool is designed for, conventional/semantic style commit m
 
 - [ ] Create GitHub action that would do this on a recurring schedule or on certain events
 - [ ] Add types, convert to TS ?
-- [ ] Add other models / parameters (like gpt-3.5-turbo)
+- [ ] Add other [models / parameters from openai](https://platform.openai.com/docs/models/overview)
 - [ ] Better output (chalk-style coloring, etc.)
-- [ ] Add token usage (and expected costs) information
+- [x] Add token usage 
+- [ ] Add ability to estimate expected costs information
 - [ ] Add more options for fun and useful prompt crafting
 
 ## Try it out!
@@ -52,11 +53,13 @@ To use this package in a script or your app, first install it via npm:
 
 ## Usage
 
-To use this package, you will need to set your OpenAI API key as an environment variable:
+To use this package, you will need [an OpenAI API key](https://platform.openai.com/account/api-keys) 
+Set it as an env var, pass it as an arg when calling the function, or from the CLI.
+
 - `OPENAI_API_KEY`: Your OpenAI API key
 
 
-Then, you can use in a package.json script: 
+*Then, you can use in a package.json script: *
 
 ```js
 scripts: {
@@ -64,12 +67,11 @@ scripts: {
 }
 ```
 
-Or in your app!
+*In your app:*
 
 ```js
 import { getGptSummary } from "git-ai-summary"
-// all args optional, and can be specified from the command line as well with --arg=value
-// model_params need to be prefixed with a triple "-", e.g. "git-ai-summary ---model="model_name" ---temperature=2
+// all args optional, app uses sensible defaults
 const args = {
    app_name: "My great app", // Defaults to "name" from package.json
    app_description: "My freat app does great things", // Defaults to "description" from package.json.
@@ -77,10 +79,10 @@ const args = {
    audience: 'clients', // finishes the sentence: 'Summarize these commit logs into friendly software release notes that will be appropriate for...'
    language: 'spanish',
    provider: 'openai',
-   key: 'YOUR-OPENAI-KEY',
+   key: 'YOUR-OPENAI-KEY', // if OPENAI_API_KEY not in Env
    commit_format: 'Interpret the commit messages as follows: "type/scope/purpose"', // e.g. if your commit format is "fix/login/Correctly handle invalid auth with error messages"
    additional_instructions: 'Write the summaries in Haiku', // any additional instructions you want to send to ChatGPT
-   quiet: true, // won't log to console
+   verbose: true, // logs intermediary steps to console and provides full result object in CLI output
    model_params: { // https://platform.openai.com/docs/introduction/overview
       model: 'text-davinci-003', // Set your own model!
       temperature: 2, // Get some crazy results! Seriously, 0 is the default and mostly deterministic, YMMV with anything north of 0.8
@@ -91,6 +93,16 @@ const args = {
 const summary = await getGptSummary(args)
 
 ```
+
+*Or from the CLI:*
+```sh
+```
+// Note, any of the arguments above can be specified from the command line
+// Boolean values use single dash (e.g. -verbose)
+// Root object vars use double dash (e.g. --language=Swahili)
+// model_params use atriple "-" prefix, e.g. "git-ai-summary ---model="model_name" ---temperature=2
+
+node git-ai-summary -verbose --range="30 days ago" --key="my-open-ai-api-key" ---max_tokens=2000
 
 ### Example 1: Freelancer Summarizing Work for a Non-Technical Client
 

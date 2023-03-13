@@ -10,17 +10,17 @@ async function getGptSummary(userArgs) {
     audience: process.env.audience || 'clients',
     apiKey: process.env.OPENAI_API_KEY,
     language: process.env.language || 'English',
-    quiet: false,
+    verbose: false,
     model_params: {
       model: userArgs.model || 'text-davinci-003', // in case the user is using the cli or wants to put the model at the root of the options
     },
   };
   const args = { ...defaultArgs, ...userArgs };
-  console.log(18, args);
+
   args.commit_log = await getGitSummary(args.range);
   args.prompt = generatePrompt(args);
 
-  if (!args.quiet)
+  if (args.verbose)
     console.log(
       '===== Using prompt:\n\n"',
       args.prompt,
