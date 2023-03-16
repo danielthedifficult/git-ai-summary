@@ -27,7 +27,7 @@ Note: I use, and this tool is designed for, conventional/semantic style commit m
 - [x] Add token usage 
 - [ ] Add ability to estimate expected costs information
 - [ ] Add more options for fun and useful prompt crafting
-
+- [ ] Way, way better error handling, with API error code hints.
 ## Try it out!
 
 [![npm package][npm-img]][npm-url]
@@ -63,7 +63,7 @@ Set it as an env var, pass it as an arg when calling the function, or from the C
 
 ```js
 scripts: {
-   "es-client-2-week-summary" : "range='14 days ago' audience=clients language=spanish npx git-ai-summary"
+   "es-client-2-week-summary" : "npx git-ai-summary --range='14 days ago' --audience='clients' --language='spanish' "
 }
 ```
 
@@ -73,8 +73,8 @@ scripts: {
 import { getGptSummary } from "git-ai-summary"
 // all args optional, app uses sensible defaults
 const args = {
-   app_name: "My great app", // Defaults to "name" from package.json
-   app_description: "My freat app does great things", // Defaults to "description" from package.json.
+   app_name: "My great app", // Defaults to "name" from package.json. Provides context to the model.
+   app_description: "My great app does great things", // Defaults to "description" from package.json. Provides context to the model.
    range: '14 days ago', // anything compatible with git log --since 
    audience: 'clients', // finishes the sentence: 'Summarize these commit logs into friendly software release notes that will be appropriate for...'
    language: 'spanish',
@@ -96,29 +96,34 @@ const summary = await getGptSummary(args)
 
 *Or from the CLI:*
 ```sh
-```
+
 // Note, any of the arguments above can be specified from the command line
 // Boolean values use single dash (e.g. -verbose)
 // Root object vars use double dash (e.g. --language=Swahili)
 // model_params use atriple "-" prefix, e.g. "git-ai-summary ---model="model_name" ---temperature=2
-
+npm i git-ai-summary
 node git-ai-summary -verbose --range="30 days ago" --key="my-open-ai-api-key" ---max_tokens=2000
+```
 
 ### Example 1: Freelancer Summarizing Work for a Non-Technical Client
 
 Suppose you are a freelancer working on a web development project for a non-technical client.
 
-`OPENAI_API_KEY="your-api-key" RANGE="1 week ago" npx git-ai-summary --audience 'clients'`
+`npx git-ai-summary --audience='clients' --apiKey="your-api-key" --range="14 days ago"`
 
 
 ### Example 2: Developer Summarizing Work for Non-Technical Colleagues in Another Language
 
 Suppose you are a developer working on a project with non-technical colleagues who speak a different language.
 
-`OPENAI_API_KEY="your-api-key" RANGE="1 week ago" npx git-ai-summary --language french --audience 'non-technical colleagues'`
+`npx git-ai-summary --apiKey="your-api-key" --range="14 days ago" --language=french --audience='non-technical colleagues'`
 
 ## Tips
 
+#### Limits:
+**Be careful sending too much of a history to ChatGPT. Even though it should be able to handle 8,000ish words, I've been getting `400` errors from their API going above 25ish commits.**
+
+#### Formatting:
 I use conventional commits, but I asked ChatGPT for the best way to structure commit messages for later summarization:
 
 ><i>To best understand and summarize commit messages for software release notes, it's helpful if the commit messages follow a consistent structure. Here are some best practices for structuring commit messages that will make it easier for me as a marketing and communications specialist to parse and understand them:
