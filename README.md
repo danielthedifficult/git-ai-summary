@@ -21,11 +21,11 @@ Note: I use, and this tool is designed for, conventional/semantic style commit m
 ## Todo
 
 - [ ] Create GitHub action that would do this on a recurring schedule or on certain events
-- [ ] Add types, convert to TS ?
+- [ ] Convert to TS ?
 - [ ] Add other [models / parameters from openai](https://platform.openai.com/docs/models/overview)
 - [ ] Better output (chalk-style coloring, etc.)
 - [x] Add token usage 
-- [ ] Add ability to estimate expected costs information
+- [ ] Support longer commit messages / batching / chunking
 - [ ] Add more options for fun and useful prompt crafting
 - [ ] Way, way better error handling, with API error code hints.
 ## Try it out!
@@ -45,11 +45,14 @@ OPENAI_API_KEY="your-api-key" npx git-ai-summary
 
 ## Installation
 
-To use this package in a script or your app, first install it via npm:
+To use this package in a script or your app, first install it:
 
-```npm install -d git-ai-summary`
+npm:
+`npm install -d git-ai-summary`
 
+yarn:
 `yarn add git-ai-summary --save-dev`
+
 
 ## Usage
 
@@ -59,7 +62,7 @@ Set it as an env var, pass it as an arg when calling the function, or from the C
 - `OPENAI_API_KEY`: Your OpenAI API key
 
 
-*Then, you can use in a package.json script: *
+*Then, you can use in a package.json script:*
 
 ```js
 scripts: {
@@ -109,14 +112,17 @@ node git-ai-summary -verbose --range="30 days ago" --key="my-open-ai-api-key" --
 
 Suppose you are a freelancer working on a web development project for a non-technical client.
 
-`npx git-ai-summary --audience='clients' --apiKey="your-api-key" --range="14 days ago"`
-
+```sh
+npx git-ai-summary --audience='clients' --apiKey="your-api-key" --range="14 days ago"
+```
 
 ### Example 2: Developer Summarizing Work for Non-Technical Colleagues in Another Language
 
 Suppose you are a developer working on a project with non-technical colleagues who speak a different language.
 
-`npx git-ai-summary --apiKey="your-api-key" --range="14 days ago" --language=french --audience='non-technical colleagues'`
+```sh
+npx git-ai-summary --apiKey="your-api-key" --range="14 days ago" --language=french --audience='non-technical colleagues'
+```
 
 ## Tips
 
