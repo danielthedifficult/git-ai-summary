@@ -29,9 +29,14 @@ async function getGptSummary(userArgs) {
       '"'
     );
 
-  if (getChatGptResponse[args.model_params.model])
-    return await getChatGptResponse[args.model_params.model](args);
-  else
+  if (getChatGptResponse[args.model_params.model]) {
+    let response = await getChatGptResponse[args.model_params.model](args);
+    if (args.verbose) console.log('Response from ChatGPT:', response);
+    return {
+      commit_log: args.commit_log,
+      ...response,
+    };
+  } else
     throw new Error(
       'Specified model',
       args.model_params.model,
